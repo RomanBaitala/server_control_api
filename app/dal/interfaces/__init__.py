@@ -1,3 +1,4 @@
 from .iserver_repository import IServerRepository
 from .iuser_repository import IUserRepository
 from .ibase_repository import IBaseRepository
+from .imetric_repository import IMetricRepository

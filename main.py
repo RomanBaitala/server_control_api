@@ -8,11 +8,15 @@ from flasgger import Swagger
 
 from app.config.ext import db
 
+from app.schemas.metric_schema import MetricCreate, MetricResponse
+from app.utils.mqtt_bridge import start_mqtt_listener
+
 from app.route.user_route import user_bp
 from app.route.server_route import server_bp
+from app.route.metric_route import metric_bp
 
 from app.models import User, Server
-from app.schemas import UserCreate, UserLogin, ServerCreate, ServerResponse
+from app.schemas import UserCreate, UserLogin, ServerCreate, ServerResponse, ServerUpdate, MetricCreate, MetricResponse
 
 load_dotenv()
 
@@ -41,7 +45,10 @@ def create_app():
             "UserCreate": UserCreate.model_json_schema(),
             "UserLogin": UserLogin.model_json_schema(),
             "ServerCreate": ServerCreate.model_json_schema(),
+            "ServerUpdate": ServerUpdate.model_json_schema(),
             "ServerResponse": ServerResponse.model_json_schema(),
+            "MetricResponse": MetricResponse.model_json_schema(),
+            "MetricCreate": MetricCreate.model_json_schema(),
         }
     }
 
@@ -59,9 +66,11 @@ def create_app():
 
     app.register_blueprint(user_bp)
     app.register_blueprint(server_bp)
+    app.register_blueprint(metric_bp)
 
     with app.app_context():
         db.create_all()
+        start_mqtt_listener(app)
         print("Таблиці бази даних синхронізовано.")
 
     return app
