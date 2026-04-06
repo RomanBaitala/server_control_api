@@ -9,15 +9,15 @@ class MetricService(IMetricService):
         self.metric_repo = metric_repo
         self.server_repo = server_repo
 
-    def add_metric(self, server_id: int, cpu_usage: float, cpu_temp: float, ram_usage: float) -> MetricResponse:
+    def add_metric(self, server_id: int, cpu_usage: float, cpu_temperature: float, memory_usage: float) -> MetricResponse:
         if not self.server_repo.get_by_id(server_id):
             raise ValueError(f"Сервер з ID {server_id} не знайдено. Метрики відхилено.")
 
         new_metric = Metric(
             server_id=server_id,
             cpu_usage=cpu_usage,
-            cpu_temp=cpu_temp,
-            ram_usage=ram_usage
+            cpu_temperature=cpu_temperature,
+            memory_usage=memory_usage
         )
 
         created_metric = self.metric_repo.create(new_metric)
