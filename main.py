@@ -10,6 +10,7 @@ from app.config.ext import db
 
 from app.schemas.metric_schema import MetricCreate, MetricResponse
 from app.utils.mqtt_bridge import start_mqtt_listener
+from app.utils.scheduler import start_health_checker
 
 from app.route.user_route import user_bp
 from app.route.server_route import server_bp
@@ -71,6 +72,9 @@ def create_app():
     with app.app_context():
         db.create_all()
         start_mqtt_listener(app)
+
+        start_health_checker(app)
+
         print("Таблиці бази даних синхронізовано.")
 
     return app

@@ -1,3 +1,4 @@
+import datetime
 from typing import List, Optional
 from ...models import Server
 from ..interfaces import IServerService
@@ -53,3 +54,19 @@ class ServerService(IServerService):
         
         self.server_repo.delete(server_id)
         return True
+    
+    def mark_online(self, server_id: int):
+        server = self.server_repo.get_by_id(server_id)
+        if server:
+            server.status = "connected"
+            server.last_seen = datetime.utcnow()
+            self.server_repo.update(server)
+
+    def cleanup_offline_servers(self, timeout_minutes: int = 5):
+        threshold = datetime.utcnow() - datetime.timedelta(minutes=timeout_minutes)
+        all_active = self.server_repo.get_all_active() 
+        
+        for server in all_active:
+            if server.last_seen and server.last_seen < threshold:
+                server.status = "disconnected"
+                self.server_repo.update(server)
