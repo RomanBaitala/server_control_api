@@ -3,6 +3,7 @@ import datetime
 import os
 from functools import wraps
 from flask import request, jsonify
+from flask import g
 
 SECRET_KEY = os.getenv("SECRET_KEY", "your_super_secret_key_123")
 
@@ -17,14 +18,15 @@ def generate_token(user_id):
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token:
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
             return jsonify({'message': 'Token is missing!'}), 401
         try:
-            token = token.split(" ")[1]
+            token = auth_header.split(" ")[1]
             data = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-            current_user_id = data['sub']
-        except:
-            return jsonify({'message': 'Token is invalid!'}), 401
-        return f(current_user_id, *args, **kwargs)
+            g.current_user_id = data['sub'] 
+        except Exception as e:
+            return jsonify({'message': 'Token is invalid!', 'error': str(e)}), 401
+            
+        return f(*args, **kwargs)
     return decorated
