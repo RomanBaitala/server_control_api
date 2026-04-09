@@ -11,9 +11,14 @@ def generate_token(user_id):
     payload = {
         'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
         'iat': datetime.datetime.utcnow(),
-        'sub': user_id
+        'sub': str(user_id)
     }
-    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+    if isinstance(token, bytes):
+        token = token.decode('utf-8')
+
+    return token
 
 def token_required(f):
     @wraps(f)

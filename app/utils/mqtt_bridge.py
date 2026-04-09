@@ -7,7 +7,7 @@ from app.config.ext import db
 def start_mqtt_listener(app):
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
-    def on_connect(client, userdata, flags, rc):
+    def on_connect(client, userdata, flags, rc, properties=None):
         print(f"Connected to MQTT Broker with code {rc}")
         client.subscribe("servers/+/metrics")
 
