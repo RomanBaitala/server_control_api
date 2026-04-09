@@ -8,41 +8,17 @@ server_bp = Blueprint('server', __name__, url_prefix='/api/servers')
 
 @server_bp.route('/', methods=['POST'])
 @token_required
-def add_server():
-    """
-    Додати новий сервер до облікового запису
-    ---
-    tags:
-      - Server API
-    parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          properties:
-            owner_id:
-              type: integer
-            name:
-              type: string
-              example: "Home-NAS"
-            ip_address:
-              type: string
-              example: "192.168.1.10"
-    responses:
-      201:
-        description: Сервер успішно додано
-      400:
-        description: Невірний формат даних або IP вже зайнятий
-    """
+def add_server(current_user_id):
     data = request.get_json()
-    owner_id = data.get('owner_id')
     try:
         server_in = ServerCreate(**data)
-        new_server = server_service.create_server(owner_id, server_in)
-        return jsonify(new_server.model_dump()), HTTPStatus.CREATED
+        
+        new_server = server_service.create_server(current_user_id, server_in)
+        
+        return jsonify(new_server.model_dump()), 201
     except Exception as e:
-        return jsonify({"error": str(e)}), HTTPStatus.BAD_REQUEST
+        print(f"DEBUG: Create Server Error: {e}")
+        return jsonify({"error": str(e)}), 400
 
 @server_bp.route('/owner/<int:owner_id>', methods=['GET'])
 @token_required
