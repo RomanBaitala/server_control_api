@@ -9,6 +9,32 @@ server_bp = Blueprint('server', __name__, url_prefix='/api/servers')
 @server_bp.route('/', methods=['POST'])
 @token_required
 def add_server(current_user_id):
+    """
+    Додати новий сервер до облікового запису
+    ---
+    tags:
+      - Server API
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            owner_id:
+              type: integer
+            name:
+              type: string
+              example: "Home-NAS"
+            ip_address:
+              type: string
+              example: "192.168.1.10"
+    responses:
+      201:
+        description: Сервер успішно додано
+      400:
+        description: Невірний формат даних або IP вже зайнятий
+    """
     data = request.get_json()
     try:
         server_in = ServerCreate(**data)
