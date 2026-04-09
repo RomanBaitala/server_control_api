@@ -2,10 +2,12 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, request
 from app.bll.services import metric_service
 from app.schemas import MetricResponse
+from app.utils.auth_handle import token_required
 
 metric_bp = Blueprint('metric', __name__, url_prefix='/api/metrics')
 
 @metric_bp.route('/<int:server_id>/metrics', methods=['GET'])
+@token_required
 def get_metrics(server_id: int):
     """
     Отримати історію метрик для конкретного сервера
