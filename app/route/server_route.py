@@ -2,10 +2,12 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, request, make_response
 from app.bll.services import server_service
 from app.schemas import ServerCreate, ServerUpdate
+from app.utils.auth_handle import token_required
 
 server_bp = Blueprint('server', __name__, url_prefix='/api/servers')
 
 @server_bp.route('/', methods=['POST'])
+@token_required
 def add_server():
     """
     Додати новий сервер до облікового запису
@@ -43,6 +45,7 @@ def add_server():
         return jsonify({"error": str(e)}), HTTPStatus.BAD_REQUEST
 
 @server_bp.route('/owner/<int:owner_id>', methods=['GET'])
+@token_required
 def list_servers(owner_id: int):
     """
     Отримати список усіх серверів власника
@@ -66,6 +69,7 @@ def list_servers(owner_id: int):
     return jsonify([s.model_dump() for s in servers]), HTTPStatus.OK
 
 @server_bp.route('/<int:server_id>', methods=['PATCH'])
+@token_required
 def update_server(server_id: int):
     """
     Оновити дані сервера (назва, IP або статус)

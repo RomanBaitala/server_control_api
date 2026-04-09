@@ -2,6 +2,7 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, request, make_response
 from app.bll.services import user_service
 from app.schemas import UserCreate, UserUpdate, UserLogin
+from app.utils.auth_handle import generate_token, token_required
 
 user_bp = Blueprint('user', __name__, url_prefix='/api/users')
 
@@ -53,14 +54,16 @@ def login():
     """
     try:
         login_in = UserLogin(**request.get_json())
-        print(f"Attempting login for email: {login_in}")
         user = user_service.authenticate_user(login_in)
         
         if not user:
-            return jsonify({"error": "Невірні облікові дані"}), HTTPStatus.UNAUTHORIZED
+            return jsonify({"error": "Невірний email або пароль"}), HTTPStatus.UNAUTHORIZED
             
+        token = generate_token(user.id)
+        
         return jsonify({
             "message": "Вхід успішний",
+            "token": token,
             "user": user.model_dump()
         }), HTTPStatus.OK
         
@@ -68,6 +71,7 @@ def login():
         return jsonify({"error": str(e)}), HTTPStatus.BAD_REQUEST
 
 @user_bp.route('/<int:user_id>', methods=['GET'])
+@token_required
 def get_profile(user_id: int):
     """
     Отримати профіль користувача за ID
