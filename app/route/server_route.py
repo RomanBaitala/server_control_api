@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from flask import Blueprint, jsonify, request, make_response
+from flask import Blueprint, jsonify, request, g
 from app.bll.services import server_service
 from app.schemas import ServerCreate, ServerUpdate
 from app.utils.auth_handle import token_required
@@ -8,7 +8,7 @@ server_bp = Blueprint('server', __name__, url_prefix='/api/servers')
 
 @server_bp.route('/', methods=['POST'])
 @token_required
-def add_server(current_user_id):
+def add_server():
     """
     Додати новий сервер до облікового запису
     ---
@@ -39,11 +39,11 @@ def add_server(current_user_id):
     try:
         server_in = ServerCreate(**data)
         
-        new_server = server_service.create_server(current_user_id, server_in)
+        current_user_id = g.current_user_id
         
+        new_server = server_service.create_server(current_user_id, server_in)
         return jsonify(new_server.model_dump()), 201
     except Exception as e:
-        print(f"DEBUG: Create Server Error: {e}")
         return jsonify({"error": str(e)}), 400
 
 @server_bp.route('/owner/<int:owner_id>', methods=['GET'])
