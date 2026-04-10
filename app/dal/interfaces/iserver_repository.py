@@ -11,3 +11,7 @@ class IServerRepository(IBaseRepository[Server]):
     @abstractmethod
     def get_by_ip(self, ip_address: str) -> Optional[Server]:
         pass
+
+    @abstractmethod
+    def get_all_active(self) -> List[Server]:
+        pass

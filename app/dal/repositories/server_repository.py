@@ -12,3 +12,6 @@ class ServerRepository(BaseRepository[Server], IServerRepository):
 
     def get_by_ip(self, ip_address: str) -> Optional[Server]:
         return self.model.query.filter_by(ip_address=ip_address).first()
+    
+    def get_all_active(self) -> List[Server]:
+        return self.session.query(Server).filter(Server.status == 'connected').all()

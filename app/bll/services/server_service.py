@@ -71,5 +71,4 @@ class ServerService(IServerService):
                 server.status = "disconnected"
                 self.server_repo.update(server)
 
-    def get_all_active(self) -> List[Server]:
-        return self.session.query(Server).filter(Server.status == 'connected').all()
+    
