@@ -56,14 +56,16 @@ class ServerService(IServerService):
         return True
     
     def mark_online(self, server_id: int):
-        server = self.server_repo.get_by_id(server_id)
-        if server:
-            server.status = "connected"
-            server.last_seen = datetime.now(timezone.utc)
-            self.server_repo.update(server)
+            server = self.server_repo.get_by_id(server_id)
+            if server:
+                server.status = "connected"
+                server.last_seen = datetime.now(timezone.utc).replace(tzinfo=None)
+                self.server_repo.update(server)
 
     def cleanup_offline_servers(self, timeout_minutes: int = 5):
-        threshold = datetime.now(timezone.utc) - timedelta(minutes=timeout_minutes)
+        now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+        threshold = now_utc - timedelta(minutes=timeout_minutes)
+        
         all_active = self.server_repo.get_all_active() 
         
         for server in all_active:
