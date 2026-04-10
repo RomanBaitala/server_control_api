@@ -71,7 +71,9 @@ def create_app():
 
     with app.app_context():
         db.create_all()
-        start_mqtt_listener(app)
+        if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+            start_mqtt_listener(app)
+            print("MQTT Listener started in the main process")
 
         start_health_checker(app)
 

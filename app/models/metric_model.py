@@ -12,3 +12,7 @@ class Metric(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone.utc))
 
     server = db.relationship("Server", backref=db.backref("metrics", lazy=True))
+
+    __table_args__ = (
+        db.UniqueConstraint('server_id', 'timestamp', name='_server_timestamp_uc'),
+    )

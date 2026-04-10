@@ -1,8 +1,10 @@
 import json
+from sqlite3 import IntegrityError
 import paho.mqtt.client as mqtt
 from app.bll.services import metric_service, server_service
 from app.schemas import MetricCreate
 from datetime import datetime, timezone
+from ..config.ext import db
 
 def start_mqtt_listener(app):
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -35,8 +37,12 @@ def start_mqtt_listener(app):
                 
                 print(f"Metrics saved and status updated for server {server_id}")
 
+            except IntegrityError:
+                db.session.rollback()
+                print("⚠️ Дублікат метрики проігноровано (UniqueConstraint)")
             except Exception as e:
-                print(f"Error processing MQTT message for topic {msg.topic}: {e}")
+                db.session.rollback()
+                print(f"❌ Помилка: {e}")
 
     client.on_connect = on_connect
     client.on_message = on_message
