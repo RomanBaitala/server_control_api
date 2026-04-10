@@ -70,3 +70,6 @@ class ServerService(IServerService):
             if server.last_seen and server.last_seen < threshold:
                 server.status = "disconnected"
                 self.server_repo.update(server)
+
+    def get_all_active(self) -> List[Server]:
+        return self.session.query(Server).filter(Server.status == 'connected').all()
