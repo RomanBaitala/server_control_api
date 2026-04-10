@@ -2,6 +2,7 @@ import json
 import paho.mqtt.client as mqtt
 from app.bll.services import metric_service, server_service
 from app.schemas import MetricCreate
+from datetime import datetime, timezone
 
 def start_mqtt_listener(app):
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -26,7 +27,8 @@ def start_mqtt_listener(app):
                     server_id=metric_in.server_id,
                     cpu_usage=metric_in.cpu_usage,
                     cpu_temperature=metric_in.cpu_temperature,
-                    memory_usage=metric_in.memory_usage
+                    memory_usage=metric_in.memory_usage,
+                    timestamp=datetime.now(timezone.utc)
                 )
 
                 server_service.mark_online(server_id)

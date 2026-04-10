@@ -3,13 +3,14 @@ from ..interfaces.imetric_service import IMetricService
 from ...dal.interfaces import IMetricRepository, IServerRepository
 from ...schemas import MetricResponse
 from ...models import Metric
+import datetime
 
 class MetricService(IMetricService):
     def __init__(self, metric_repo: IMetricRepository, server_repo: IServerRepository):
         self.metric_repo = metric_repo
         self.server_repo = server_repo
 
-    def add_metric(self, server_id: int, cpu_usage: float, cpu_temperature: float, memory_usage: float) -> MetricResponse:
+    def add_metric(self, server_id: int, cpu_usage: float, cpu_temperature: float, memory_usage: float, timestamp: datetime = None) -> MetricResponse:
         if not self.server_repo.get_by_id(server_id):
             raise ValueError(f"Сервер з ID {server_id} не знайдено. Метрики відхилено.")
 
@@ -17,7 +18,8 @@ class MetricService(IMetricService):
             server_id=server_id,
             cpu_usage=cpu_usage,
             cpu_temperature=cpu_temperature,
-            memory_usage=memory_usage
+            memory_usage=memory_usage,
+            timestamp=timestamp or datetime.datetime.now(datetime.timezone.utc)
         )
 
         created_metric = self.metric_repo.create(new_metric)
