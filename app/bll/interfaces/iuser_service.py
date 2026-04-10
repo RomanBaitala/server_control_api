@@ -13,14 +13,6 @@ class IUserService(ABC):
     def authenticate_user(self, email: str, password: str):
         pass
 
-    # @abstractmethod
-    # def find_by_email(self, email: str):
-    #     pass
-
-    # @abstractmethod
-    # def get_all_users(self):
-    #     pass
-
     @abstractmethod
     def update_user(self):
         pass 

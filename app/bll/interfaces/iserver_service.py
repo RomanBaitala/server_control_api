@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from app.models import Server
+from typing import List
 
 class IServerService(ABC):
     @abstractmethod
@@ -19,4 +21,8 @@ class IServerService(ABC):
 
     @abstractmethod
     def delete_server(self, server_id: int):
+        pass
+    
+    @abstractmethod
+    def get_all_active(self) -> List[Server]:
         pass
