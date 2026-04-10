@@ -22,7 +22,5 @@ class IServerService(ABC):
     @abstractmethod
     def delete_server(self, server_id: int):
         pass
+
     
-    @abstractmethod
-    def get_all_active(self) -> List[Server]:
-        pass
